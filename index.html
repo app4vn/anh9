@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Từ Vựng Lớp 9 - Tải từ Firestore</title>
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #f0f2f5; /* Màu nền xám nhạt */
+            color: #1c1e21; /* Màu chữ chính */
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #ffffff; /* Nền trắng cho nội dung chính */
+            padding: 20px;
+            border-radius: 12px; /* Bo góc nhiều hơn */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Đổ bóng mềm hơn */
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #0056b3; /* Màu xanh dương đậm hơn cho tiêu đề */
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 1.9em;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        h2 {
+            font-size: 1.6em;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* --- Buttons --- */
+        button {
+            background-color: #0d6efd; /* Màu xanh dương chính của Bootstrap */
+            color: white;
+            border: none;
+            padding: 12px 20px; /* Tăng padding */
+            margin: 8px 5px; /* Tăng margin */
+            border-radius: 6px; /* Bo góc vừa phải */
+            cursor: pointer;
+            font-size: 1em; /* Tăng kích thước chữ */
+            font-weight: 500;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        button:hover {
+            background-color: #0056b3; /* Màu xanh đậm hơn khi hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button:disabled {
+            background-color: #adb5bd; /* Màu xám cho nút bị vô hiệu hóa */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .secondary-action-btn {
+            background-color: #6c757d; /* Màu xám cho nút hành động phụ */
+        }
+        .secondary-action-btn:hover {
+            background-color: #5a6268;
+        }
+
+        /* --- Unit List & Actions --- */
+        .unit-list {
+            list-style: none;
+            padding: 0;
+        }
+        .unit-item {
+            background-color: #f8f9fa; /* Màu nền sáng hơn cho item */
+            border: 1px solid #dee2e6; /* Viền xám nhạt */
+            padding: 18px 22px; /* Tăng padding */
+            margin-bottom: 12px; /* Tăng khoảng cách */
+            border-radius: 8px; /* Bo góc nhiều hơn */
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .unit-item:hover {
+            background-color: #e9ecef; /* Màu nền thay đổi khi hover */
+            transform: translateY(-2px); /* Hiệu ứng nhấc lên */
+        }
+        .unit-title-en {
+            font-weight: 600;
+            font-size: 1.2em;
+            color: #0056b3;
+        }
+        .unit-title-vi {
+            font-size: 0.95em;
+            color: #495057; /* Màu xám đậm hơn cho tên tiếng Việt */
+            margin-top: 5px;
+        }
+        #unitActionsView {
+            display: none;
+            text-align: center;
+            padding: 25px 0;
+        }
+        #unitActionsView .action-button-group button {
+            min-width: 180px; /* Độ rộng tối thiểu cho các nút action */
+            margin: 10px;
+            font-size: 1.05em;
+            padding: 12px 22px;
+        }
+
+        /* --- Flashcard Area --- */
+        #flashcardView {
+            display: none;
+            text-align: center;
+        }
+        .flashcard-container {
+            perspective: 1000px; /* Cho hiệu ứng 3D */
+            width: 90%;
+            max-width: 400px; /* Giới hạn chiều rộng tối đa */
+            height: 250px;
+            margin: 25px auto;
+            cursor: pointer;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), opacity 0.25s ease-in-out; /* Hiệu ứng lật mượt hơn */
+            opacity: 1;
+            border-radius: 15px; /* Bo góc nhiều cho flashcard */
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12); /* Đổ bóng rõ hơn */
+        }
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Ẩn mặt sau khi không lật */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            border: 1px solid #e9ecef; /* Viền nhẹ cho các mặt */
+        }
+        .flashcard-front {
+            background-color: #fff;
+        }
+        .flashcard-back {
+            background-color: #f8f9fa; /* Màu nền khác cho mặt sau */
+            transform: rotateY(180deg);
+        }
+        .flashcard-word {
+            font-size: 2.2em; /* Chữ to hơn cho từ vựng */
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #0056b3;
+        }
+        .flashcard-pronunciation {
+            font-size: 1.1em;
+            color: #198754; /* Màu xanh lá cho phiên âm */
+            margin-bottom: 15px;
+        }
+        .flashcard-pos { /* Part of Speech */
+            font-size: 0.95em;
+            font-style: italic;
+            color: #fd7e14; /* Màu cam cho loại từ */
+            margin-bottom: 8px;
+        }
+        .flashcard-meaning {
+            font-size: 1.4em;
+            color: #343a40; /* Màu chữ đậm cho nghĩa */
+        }
+        .flashcard-example {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 15px;
+            font-style: italic;
+            max-width: 90%;
+        }
+        #fcImage { /* Kiểu cho hình ảnh Flashcard */
+            max-width: 80%;
+            max-height: 100px; /* Giới hạn chiều cao ảnh, điều chỉnh nếu cần */
+            margin-top: 10px;
+            border-radius: 8px;
+            object-fit: cover; /* Đảm bảo ảnh vừa vặn, không bị méo */
+        }
+        #wordCounter {
+            margin-top:15px;
+            font-size: 0.95em;
+            color: #495057;
+        }
+
+        /* --- Quiz View --- */
+        #quizView {
+            display: none;
+            text-align: center;
+            padding: 10px 0; 
+        }
+        #quizProgress {
+            font-size: 1em;
+            color: #495057;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        #questionArea {
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 1.6em; 
+            font-weight: bold;
+            color: #212529; 
+            background-color: #e9f5ff; 
+            border-radius: 8px;
+            min-height: 60px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #quizQuestionWrapper { 
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #quizQuestionWrapper.content-hidden {
+            opacity: 0;
+        }
+        .options-container button {
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+            width: 100%; 
+            max-width: 450px; 
+            margin: 10px auto; 
+            padding: 15px; 
+            font-size: 1.05em;
+            background-color: #fff; 
+            color: #0d6efd; 
+            border: 2px solid #0d6efd; 
+            border-radius: 8px;
+            text-align: left; 
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+        }
+        .options-container button:not(:disabled):hover {
+            background-color: #e0e त्रिदेव; 
+            border-color: #0056b3;
+        }
+        .options-container button .option-text {
+            flex-grow: 1; 
+            text-align: center; 
+        }
+        .options-container button .icon {
+            margin-right: 10px; 
+            font-size: 1.2em;
+        }
+
+        .options-container button.correct {
+            background-color: #198754; 
+            color: white;
+            border-color: #146c43;
+        }
+        .options-container button.incorrect {
+            background-color: #dc3545; 
+            color: white;
+            border-color: #b02a37;
+        }
+        
+        #feedbackArea {
+            margin: 20px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 20px; 
+        }
+        #feedbackArea.correct-feedback {
+            background-color: #d1e7dd; 
+            color: #0f5132; 
+            border: 1px solid #badbcc;
+        }
+        #feedbackArea.incorrect-feedback {
+            background-color: #f8d7da; 
+            color: #842029; 
+            border: 1px solid #f5c2c7;
+        }
+
+        #scoreArea {
+            margin: 25px 0;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #0056b3;
+        }
+        #quizView #nextQuestionBtn {
+            font-size: 1.05em;
+            padding: 12px 25px;
+        }
+
+        /* --- Status Messages --- */
+        .status-message {
+            text-align: center;
+            padding: 25px;
+            font-size: 1.1em;
+            color: #6c757d;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        .status-message small { 
+            display: block;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #dc3545; 
+        }
+
+        /* --- Icons (Simple Unicode for now) --- */
+        .icon-correct::before {
+            content: '✓ '; 
+            font-weight: bold;
+        }
+        .icon-incorrect::before {
+            content: '✗ '; 
+            font-weight: bold;
+        }
+    </style>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+      // Import Firestore specific functions
+      import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore-lite.js";
+    
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCQIoJsPNVBfJR2vKLDwmrNl3qKXXqYMd0", // LƯU Ý: Đây là key mẫu, hãy thay bằng key của bạn
+        authDomain: "engcard-7782.firebaseapp.com",
+        projectId: "engcard-7782",
+        storageBucket: "engcard-7782.firebasestorage.app", 
+        messagingSenderId: "862442232694",
+        appId: "1:862442232694:web:7868c6bd222ba0a7a83857"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      // Initialize Cloud Firestore and get a reference to the service
+      const db = getFirestore(app);
+
+      // Make db and Firestore functions accessible to the main script
+      window.db = db;
+      window.fbCollection = collection;
+      window.fbGetDocs = getDocs;
+      window.fbQuery = query;
+      window.fbOrderBy = orderBy;
+
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Học Từ Vựng Lớp 9</h1>
+
+        <div id="unitSelectionView">
+            <div id="unitListContainer" class="unit-list">
+                <div class="status-message">Đang tải danh sách Unit...</div>
+            </div>
+        </div>
+
+        <div id="unitActionsView">
+            <h2 id="unitActionsTitle"></h2>
+            <div class="action-button-group">
+                <button id="startFlashcardBtn">Học Flashcards</button>
+                <button id="startQuizBtn">Làm Quiz</button>
+            </div>
+            <button id="backToUnitsFromActionsBtn" class="secondary-action-btn">Quay lại danh sách Unit</button>
+        </div>
+
+        <div id="flashcardView">
+            <h2 id="flashcardUnitTitle"></h2>
+            <div class="flashcard-container" id="flashcardContainer">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-face flashcard-front">
+                        <div id="fcWord" class="flashcard-word"></div>
+                        <div id="fcPronunciation" class="flashcard-pronunciation"></div>
+                        <img id="fcImage" src="" alt="Hình ảnh minh họa" style="display: none;">
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div id="fcPartOfSpeech" class="flashcard-pos"></div>
+                        <div id="fcMeaning" class="flashcard-meaning"></div>
+                        <div id="fcExampleEn" class="flashcard-example"></div>
+                        <div id="fcExampleVi" class="flashcard-example"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="wordCounter"></div>
+            <div class="action-buttons">
+                <button id="flipCardBtn">Lật thẻ (Hoặc click)</button>
+            </div>
+            <div class="nav-buttons">
+                <button id="prevCardBtn">Trước</button>
+                <button id="nextCardBtn">Tiếp</button>
+            </div>
+            <button id="backToActionsFromFlashcardBtn" class="secondary-action-btn">Quay lại</button>
+        </div>
+
+        <div id="quizView">
+            <h2 id="quizUnitTitle"></h2>
+            <div id="quizProgress"></div> 
+             <div id="quizQuestionWrapper"> 
+                <div id="questionArea"></div>
+                <div id="optionsContainer" class="options-container">
+                </div>
+            </div>
+            <div id="feedbackArea"></div>
+            <button id="nextQuestionBtn" style="display:none;">Câu tiếp theo</button>
+            <div id="scoreArea"></div>
+            <button id="backToActionsFromQuizBtn" class="secondary-action-btn">Quay lại</button>
+        </div>
+    </div>
+
+    <script type="module"> 
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const unitListContainer = document.getElementById('unitListContainer');
+            const unitSelectionView = document.getElementById('unitSelectionView');
+            const unitActionsView = document.getElementById('unitActionsView');
+            const unitActionsTitle = document.getElementById('unitActionsTitle');
+            const flashcardView = document.getElementById('flashcardView');
+            const quizView = document.getElementById('quizView');
+
+            const startFlashcardBtn = document.getElementById('startFlashcardBtn');
+            const startQuizBtn = document.getElementById('startQuizBtn');
+            const backToUnitsFromActionsBtn = document.getElementById('backToUnitsFromActionsBtn');
+
+            // Flashcard elements
+            const flashcardUnitTitle = document.getElementById('flashcardUnitTitle');
+            const flashcardContainer = document.getElementById('flashcardContainer');
+            const flashcard = document.getElementById('flashcard');
+            const fcWord = document.getElementById('fcWord');
+            const fcPronunciation = document.getElementById('fcPronunciation');
+            const fcImage = document.getElementById('fcImage'); 
+            const fcPartOfSpeech = document.getElementById('fcPartOfSpeech');
+            const fcMeaning = document.getElementById('fcMeaning');
+            const fcExampleEn = document.getElementById('fcExampleEn');
+            const fcExampleVi = document.getElementById('fcExampleVi');
+            const flipCardBtn = document.getElementById('flipCardBtn');
+            const prevCardBtn = document.getElementById('prevCardBtn');
+            const nextCardBtn = document.getElementById('nextCardBtn');
+            const wordCounter = document.getElementById('wordCounter');
+            const backToActionsFromFlashcardBtn = document.getElementById('backToActionsFromFlashcardBtn');
+
+            // Quiz elements
+            const quizUnitTitle = document.getElementById('quizUnitTitle');
+            const quizProgress = document.getElementById('quizProgress');
+            const quizQuestionWrapper = document.getElementById('quizQuestionWrapper');
+            const questionArea = document.getElementById('questionArea');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const feedbackArea = document.getElementById('feedbackArea');
+            const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+            const scoreArea = document.getElementById('scoreArea');
+            const backToActionsFromQuizBtn = document.getElementById('backToActionsFromQuizBtn');
+
+            // Global state variables
+            let vocabularyDataGlobal = null; 
+            let currentUnitNumberGlobal = null; 
+            // KHÔNG sử dụng currentUnitDetails toàn cục nữa để tránh lỗi
+            // Thay vào đó sẽ lấy thông tin unit khi cần từ vocabularyDataGlobal
+
+            // Flashcard state
+            let currentWordsInUnit_FC = [];
+            let currentWordIndex_FC = 0;
+
+            // Quiz state
+            let quizQuestions = [];
+            let currentQuestionIndex_Quiz = 0;
+            let score_Quiz = 0;
+            const NUM_QUIZ_QUESTIONS = 5; 
+            const NUM_QUIZ_OPTIONS = 4; 
+            const FADE_DURATION = 200; 
+            const QUIZ_FADE_DURATION = 250;
+
+
+            // --- Utility Functions ---
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            // --- Data Loading (Updated for Firebase) ---
+            async function loadVocabularyData() {
+                const db = window.db;
+                const fbCollection = window.fbCollection;
+                const fbGetDocs = window.fbGetDocs;
+                const fbQuery = window.fbQuery;
+                const fbOrderBy = window.fbOrderBy;
+
+                if (!db || !fbCollection || !fbGetDocs || !fbQuery || !fbOrderBy) {
+                    console.error("Firebase Firestore SDK not available.");
+                    unitListContainer.innerHTML = `<div class="status-message">Lỗi cấu hình Firebase. <small>Không thể tải dữ liệu.</small></div>`;
+                    return null;
+                }
+
+                try {
+                    const vocabularyCollectionName = "vocabulary"; 
+                    const q = fbQuery(fbCollection(db, vocabularyCollectionName), fbOrderBy("unit", "asc"), fbOrderBy("termNumber", "asc"));
+                    
+                    const querySnapshot = await fbGetDocs(q);
+                    const vocabData = [];
+                    querySnapshot.forEach((doc) => {
+                        vocabData.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    vocabularyDataGlobal = vocabData;
+                    if (vocabularyDataGlobal.length === 0) {
+                        console.warn("Không có dữ liệu từ vựng nào được tải từ Firestore collection:", vocabularyCollectionName);
+                        unitListContainer.innerHTML = `<div class="status-message">Không tìm thấy dữ liệu từ vựng trong Firestore. <small>Vui lòng kiểm tra collection '${vocabularyCollectionName}'.</small></div>`;
+                        return null;
+                    }
+                    return vocabularyDataGlobal;
+                } catch (error) {
+                    console.error("Lỗi khi tải dữ liệu từ Firestore:", error);
+                    unitListContainer.innerHTML = `<div class="status-message">Không thể tải dữ liệu từ vựng từ Firestore. <small>${error.message}</small></div>`;
+                    return null;
+                }
+            }
+
+            // --- View Management ---
+            function showView(viewToShow) {
+                [unitSelectionView, unitActionsView, flashcardView, quizView].forEach(view => {
+                    if (view) view.style.display = 'none';
+                });
+                if (viewToShow) {
+                    viewToShow.style.display = 'block';
+                }
+            }
+
+            // --- Unit Selection Logic ---
+            function displayUnits(vocabularyData) {
+                if (!vocabularyData || vocabularyData.length === 0) {
+                    return;
+                }
+                const units = {}; 
+                vocabularyData.forEach(word => {
+                    if (!units[word.unit]) {
+                        units[word.unit] = {
+                            unitNumber: word.unit,
+                            unitName_en: word.unitName_en,
+                            unitName_vi: word.unitName_vi
+                        };
+                    }
+                });
+                const sortedUnits = Object.values(units).sort((a, b) => a.unitNumber - b.unitNumber);
+                unitListContainer.innerHTML = ''; 
+                if (sortedUnits.length === 0) {
+                     unitListContainer.innerHTML = '<div class="status-message">Không có Unit nào để hiển thị.</div>';
+                     return;
+                }
+                sortedUnits.forEach(unit => {
+                    const unitElement = document.createElement('div');
+                    unitElement.classList.add('unit-item');
+                    unitElement.innerHTML = `
+                        <div class="unit-title-en">Unit ${unit.unitNumber}: ${unit.unitName_en}</div>
+                        <div class="unit-title-vi">${unit.unitName_vi}</div>
+                    `;
+                    unitElement.addEventListener('click', () => {
+                        currentUnitNumberGlobal = unit.unitNumber;
+                        // Không cần gán currentUnitDetails ở đây nữa
+                        showUnitOptions(unit); // Truyền trực tiếp object unit đã có đủ thông tin
+                    });
+                    unitListContainer.appendChild(unitElement);
+                });
+                showView(unitSelectionView);
+            }
+
+            function showUnitOptions(unit) { // Hàm này nhận object unit đầy đủ
+                unitActionsTitle.textContent = `Unit ${unit.unitNumber}: ${unit.unitName_en}`;
+                showView(unitActionsView);
+            }
+
+            // --- Flashcard Logic ---
+            function startFlashcardSession() {
+                if (!vocabularyDataGlobal || currentUnitNumberGlobal === null) { // Kiểm tra currentUnitNumberGlobal
+                    alert("Vui lòng chọn một Unit trước hoặc kiểm tra lại dữ liệu.");
+                    return;
+                }
+                currentWordsInUnit_FC = vocabularyDataGlobal.filter(word => word.unit === currentUnitNumberGlobal);
+                currentWordIndex_FC = 0;
+
+                if (currentWordsInUnit_FC.length > 0) {
+                    // Lấy thông tin unitName_en từ từ đầu tiên của unit đó (vì tất cả các từ trong unit đều có unitName_en giống nhau)
+                    const unitNameEn = currentWordsInUnit_FC[0]?.unitName_en || '';
+                    flashcardUnitTitle.textContent = `Flashcards - Unit ${currentUnitNumberGlobal}: ${unitNameEn}`;
+                    
+                    flashcard.style.opacity = '0'; 
+                    displayCurrentFlashcard(); 
+                    setTimeout(() => { flashcard.style.opacity = '1'; }, 50); 
+                    showView(flashcardView);
+                } else {
+                    alert("Không có từ vựng cho Unit này.");
+                }
+            }
+
+            function displayCurrentFlashcard() {
+                if (currentWordsInUnit_FC.length === 0) return;
+                const wordData = currentWordsInUnit_FC[currentWordIndex_FC];
+                flashcard.classList.remove('is-flipped'); 
+
+                fcWord.textContent = wordData.word;
+                fcPronunciation.textContent = wordData.pronunciation || '';
+
+                if (wordData.image_url) {
+                    fcImage.src = wordData.image_url;
+                    fcImage.alt = wordData.word; 
+                    fcImage.style.display = 'block';
+                } else {
+                    fcImage.style.display = 'none';
+                    fcImage.src = ""; 
+                }
+                
+                fcPartOfSpeech.textContent = `(${wordData.partOfSpeech || ''})`;
+                fcMeaning.textContent = wordData.meaning_vi;
+                fcExampleEn.textContent = wordData.example_en || "";
+                fcExampleVi.textContent = wordData.example_vi || "";
+
+                fcExampleEn.style.display = wordData.example_en ? 'block' : 'none';
+                fcExampleVi.style.display = wordData.example_vi ? 'block' : 'none';
+
+                updateFlashcardNavButtons();
+                wordCounter.textContent = `Từ ${currentWordIndex_FC + 1} / ${currentWordsInUnit_FC.length}`;
+            }
+
+            function updateFlashcardNavButtons() {
+                prevCardBtn.disabled = currentWordIndex_FC === 0;
+                nextCardBtn.disabled = currentWordIndex_FC === currentWordsInUnit_FC.length - 1;
+            }
+
+            function flipTheCard() {
+                flashcard.classList.toggle('is-flipped');
+            }
+
+            // --- Quiz Logic ---
+            function startQuiz() {
+                if (!vocabularyDataGlobal || currentUnitNumberGlobal === null) {
+                    alert("Vui lòng chọn một Unit trước hoặc kiểm tra lại dữ liệu.");
+                    return;
+                }
+                const wordsForQuiz = vocabularyDataGlobal.filter(word => word.unit === currentUnitNumberGlobal);
+                if (wordsForQuiz.length < 1) { 
+                    alert("Không đủ từ vựng trong Unit này để tạo quiz.");
+                    return;
+                }
+                const uniqueMeaningsInGlobalData = new Set(vocabularyDataGlobal.map(w => w.meaning_vi));
+                if (wordsForQuiz.length > 0 && uniqueMeaningsInGlobalData.size < NUM_QUIZ_OPTIONS && wordsForQuiz.length < NUM_QUIZ_OPTIONS) {
+                     alert("Không đủ từ vựng đa dạng trong toàn bộ dữ liệu để tạo các lựa chọn khác nhau cho quiz. Cần ít nhất " + NUM_QUIZ_OPTIONS + " nghĩa khác nhau.");
+                     return;
+                }
+                quizQuestions = generateQuizQuestions(wordsForQuiz, vocabularyDataGlobal);
+                if (quizQuestions.length === 0) {
+                    alert("Không thể tạo câu hỏi quiz. Có thể do không đủ từ vựng hoặc lỗi logic.");
+                    return;
+                }
+                currentQuestionIndex_Quiz = 0;
+                score_Quiz = 0;
+                const unitNameEn = wordsForQuiz[0]?.unitName_en || ''; // Lấy tên Unit
+                quizUnitTitle.textContent = `Quiz - Unit ${currentUnitNumberGlobal}: ${unitNameEn}`;
+                scoreArea.textContent = ''; 
+                feedbackArea.textContent = ''; 
+                feedbackArea.className = 'feedback-area'; 
+                nextQuestionBtn.style.display = 'none'; 
+                quizQuestionWrapper.style.opacity = '0'; 
+                displayCurrentQuizQuestion();
+                setTimeout(() => { quizQuestionWrapper.style.opacity = '1'; }, 50); 
+                showView(quizView);
+            }
+            
+            // (Các hàm generateQuizQuestions, displayCurrentQuizQuestion, handleAnswer, showQuizResults giữ nguyên như trước)
+            // ... (Copy các hàm này từ phiên bản trước nếu cần)
+            function generateQuizQuestions(wordsInUnit, allVocabulary) {
+                const questions = [];
+                const shuffledWordsInUnit = [...wordsInUnit]; 
+                shuffleArray(shuffledWordsInUnit);
+                const numQuestionsToGenerate = Math.min(NUM_QUIZ_QUESTIONS, shuffledWordsInUnit.length);
+
+                for (let i = 0; i < numQuestionsToGenerate; i++) {
+                    const targetWord = shuffledWordsInUnit[i];
+                    const correctAnswer = targetWord.meaning_vi;
+                    const options = [correctAnswer]; 
+                    const allOtherMeanings = allVocabulary
+                        .filter(w => w.meaning_vi !== correctAnswer && w.unit !== targetWord.unit) 
+                        .map(w => w.meaning_vi)
+                        .concat( 
+                            allVocabulary
+                                .filter(w => w.meaning_vi !== correctAnswer && w.unit === targetWord.unit && w.id !== targetWord.id)
+                                .map(w => w.meaning_vi)
+                        );
+                    const uniqueOtherMeanings = [...new Set(allOtherMeanings)]; 
+                    shuffleArray(uniqueOtherMeanings); 
+                    for (let j = 0; j < uniqueOtherMeanings.length && options.length < NUM_QUIZ_OPTIONS; j++) {
+                        if (!options.includes(uniqueOtherMeanings[j])) { 
+                            options.push(uniqueOtherMeanings[j]);
+                        }
+                    }
+                    let fillerIndex = 1;
+                    while (options.length < NUM_QUIZ_OPTIONS) {
+                        const fillerOption = `Lựa chọn dự phòng ${fillerIndex}`;
+                        if (!options.includes(fillerOption)) {
+                             options.push(fillerOption);
+                        }
+                        fillerIndex++; 
+                        if (fillerIndex > (NUM_QUIZ_OPTIONS * 2)) break; 
+                    }
+                    shuffleArray(options); 
+                    questions.push({
+                        questionWord: targetWord.word,
+                        pronunciation: targetWord.pronunciation || '',
+                        correctAnswer: correctAnswer,
+                        options: options,
+                        targetWordObj: targetWord 
+                    });
+                }
+                return questions;
+            }
+
+            function displayCurrentQuizQuestion() {
+                if (currentQuestionIndex_Quiz >= quizQuestions.length) {
+                    showQuizResults(); 
+                    return;
+                }
+                const q = quizQuestions[currentQuestionIndex_Quiz];
+                questionArea.innerHTML = `${q.questionWord} <span style="font-size:0.7em; color:#28a745; display: block; margin-top: 5px;">${q.pronunciation}</span>`;
+                optionsContainer.innerHTML = ''; 
+                q.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.innerHTML = `<span class="option-text">${option}</span>`; 
+                    button.addEventListener('click', () => handleAnswer(option, q, button));
+                    optionsContainer.appendChild(button);
+                });
+                feedbackArea.textContent = '';
+                feedbackArea.className = 'feedback-area'; 
+                nextQuestionBtn.style.display = 'none'; 
+                quizProgress.textContent = `Câu ${currentQuestionIndex_Quiz + 1} / ${quizQuestions.length}`;
+                scoreArea.textContent = `Điểm: ${score_Quiz}`;
+            }
+
+            function handleAnswer(selectedAnswer, questionObject, clickedButton) {
+                Array.from(optionsContainer.children).forEach(btn => {
+                    btn.disabled = true;
+                    const optionTextSpan = btn.querySelector('.option-text');
+                    const optionText = optionTextSpan ? optionTextSpan.textContent : btn.textContent; 
+                    if (optionText === questionObject.correctAnswer) {
+                        btn.classList.add('correct');
+                        btn.innerHTML = `<span class="icon icon-correct"></span><span class="option-text">${optionText}</span>`; 
+                    }
+                    if (btn === clickedButton && selectedAnswer !== questionObject.correctAnswer) {
+                        btn.classList.add('incorrect');
+                        btn.innerHTML = `<span class="icon icon-incorrect"></span><span class="option-text">${optionText}</span>`; 
+                    }
+                });
+                if (selectedAnswer === questionObject.correctAnswer) {
+                    score_Quiz++;
+                    feedbackArea.textContent = "Đúng rồi!";
+                    feedbackArea.className = 'feedback-area correct-feedback';
+                } else {
+                    feedbackArea.textContent = `Sai! Đáp án đúng là "${questionObject.correctAnswer}".`;
+                    feedbackArea.className = 'feedback-area incorrect-feedback';
+                }
+                scoreArea.textContent = `Điểm: ${score_Quiz}`;
+                nextQuestionBtn.style.display = 'inline-block'; 
+                if (currentQuestionIndex_Quiz >= quizQuestions.length - 1) {
+                    nextQuestionBtn.textContent = 'Xem kết quả';
+                } else {
+                    nextQuestionBtn.textContent = 'Câu tiếp theo';
+                }
+            }
+            
+            function showQuizResults() {
+                quizQuestionWrapper.style.opacity = '0'; 
+                feedbackArea.className = 'feedback-area'; 
+                setTimeout(() => {
+                    questionArea.textContent = "Hoàn thành Quiz!";
+                    optionsContainer.innerHTML = ''; 
+                    const unitInfo = vocabularyDataGlobal?.find(w => w.unit === currentUnitNumberGlobal);
+                    const unitNameEn = unitInfo?.unitName_en || '';
+                    quizProgress.textContent = `Kết quả Quiz Unit ${currentUnitNumberGlobal}: ${unitNameEn}`;
+                    let percentage = quizQuestions.length > 0 ? Math.round((score_Quiz / quizQuestions.length) * 100) : 0;
+                    feedbackArea.innerHTML = `Bạn đã trả lời đúng <strong>${score_Quiz} / ${quizQuestions.length}</strong> câu (${percentage}%).`;
+                    feedbackArea.style.color = '#0056b3'; 
+                    nextQuestionBtn.textContent = 'Làm lại Quiz';
+                    nextQuestionBtn.style.display = 'inline-block';
+                    nextQuestionBtn.onclick = () => { 
+                        nextQuestionBtn.onclick = handleNextQuestionClick; 
+                        startQuiz(); 
+                    };
+                    scoreArea.textContent = ''; 
+                    quizQuestionWrapper.style.opacity = '1'; 
+                }, QUIZ_FADE_DURATION);
+            }
+
+
+            // --- Event Listeners ---
+            startFlashcardBtn.addEventListener('click', startFlashcardSession);
+            startQuizBtn.addEventListener('click', startQuiz);
+            flipCardBtn.addEventListener('click', flipTheCard);
+            flashcardContainer.addEventListener('click', flipTheCard); 
+            nextCardBtn.addEventListener('click', () => {
+                if (currentWordIndex_FC < currentWordsInUnit_FC.length - 1) {
+                    flashcard.style.opacity = '0'; 
+                    setTimeout(() => {
+                        currentWordIndex_FC++;
+                        displayCurrentFlashcard(); 
+                        flashcard.style.opacity = '1'; 
+                    }, FADE_DURATION);
+                }
+            });
+            prevCardBtn.addEventListener('click', () => {
+                if (currentWordIndex_FC > 0) {
+                    flashcard.style.opacity = '0'; 
+                    setTimeout(() => {
+                        currentWordIndex_FC--;
+                        displayCurrentFlashcard(); 
+                        flashcard.style.opacity = '1'; 
+                    }, FADE_DURATION);
+                }
+            });
+            const handleNextQuestionClick = (event) => {
+                if (event.target.textContent === 'Làm lại Quiz' && typeof nextQuestionBtn.onclick === 'function' && nextQuestionBtn.onclick !== handleNextQuestionClick) {
+                    return;
+                }
+                quizQuestionWrapper.style.opacity = '0'; 
+                setTimeout(() => {
+                    if (event.target.textContent === 'Xem kết quả' || currentQuestionIndex_Quiz >= quizQuestions.length -1 ) {
+                         showQuizResults();
+                    } else {
+                         currentQuestionIndex_Quiz++;
+                         displayCurrentQuizQuestion();
+                    }
+                    quizQuestionWrapper.style.opacity = '1'; 
+                }, QUIZ_FADE_DURATION);
+            };
+            nextQuestionBtn.addEventListener('click', handleNextQuestionClick);
+            backToUnitsFromActionsBtn.addEventListener('click', () => showView(unitSelectionView));
+            
+            /**
+             * Xử lý sự kiện quay lại màn hình chọn hành động (Flashcard/Quiz) từ màn hình Flashcard hoặc Quiz.
+             * Sửa lỗi "Can't find variable: currentUnitDetails" bằng cách lấy thông tin unit từ currentUnitNumberGlobal.
+             */
+            function handleBackToActions() { 
+                if (vocabularyDataGlobal && currentUnitNumberGlobal !== null) {
+                    const unitInfo = vocabularyDataGlobal.find(w => w.unit === currentUnitNumberGlobal);
+                    if (unitInfo) {
+                        showUnitOptions({ 
+                            unitNumber: unitInfo.unit, 
+                            unitName_en: unitInfo.unitName_en, 
+                            unitName_vi: unitInfo.unitName_vi 
+                        });
+                    } else {
+                        console.warn("Không tìm thấy thông tin chi tiết cho unit number:", currentUnitNumberGlobal);
+                        showView(unitSelectionView); 
+                    }
+                } else {
+                    console.warn("vocabularyDataGlobal hoặc currentUnitNumberGlobal chưa được thiết lập.");
+                    showView(unitSelectionView); 
+                }
+            }
+            backToActionsFromFlashcardBtn.addEventListener('click', handleBackToActions);
+            backToActionsFromQuizBtn.addEventListener('click', handleBackToActions);
+
+            // --- Initialization ---
+            async function initializeApp() {
+                if (!window.db) {
+                     console.error("Firebase (db) is not initialized. Waiting for Firebase SDK to load or initialize properly.");
+                     unitListContainer.innerHTML = `<div class="status-message">Lỗi khởi tạo Firebase. Vui lòng thử tải lại trang.</div>`;
+                     return;
+                }
+                const data = await loadVocabularyData(); 
+                if (data) {
+                    displayUnits(data);
+                }
+            }
+            initializeApp();
+        });
+    </script>
+</body>
+</html>
