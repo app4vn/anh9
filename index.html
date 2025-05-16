@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashCard TA9</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="mainAppTitle">FlashCard TA9</h1>
+
+        <div id="userStatusView" style="display: none;">
+            <p id="userInfo">Chào mừng!</p>
+            <button id="logoutBtn">Đăng xuất</button>
+        </div>
+
+        <div id="authView">
+            <h2>Đăng nhập hoặc Đăng ký</h2>
+            <div id="authMessage"></div>
+            <div class="auth-form">
+                <input type="email" id="emailInput" placeholder="Email" required>
+                <input type="password" id="passwordInput" placeholder="Mật khẩu" required>
+                <button id="loginBtn">Đăng nhập</button>
+                <button id="registerBtn">Đăng ký</button>
+            </div>
+        </div>
+
+        <div id="unitSelectionView" style="display: none;">
+            <div id="unitListContainer" class="unit-list">
+                <div class="status-message">Đang tải danh sách Unit...</div>
+            </div>
+        </div>
+
+        <div id="unitActionsView" style="display: none;">
+            <h2 id="unitActionsTitle"></h2>
+
+            <div id="flashcardFilterControls" class="filter-controls-container">
+                <p class="filter-label">Học từ theo trạng thái:</p>
+                <div class="filter-options">
+                    <label>
+                        <input type="radio" name="flashcardFilter" value="all" checked> Tất cả
+                    </label>
+                    <label>
+                        <input type="radio" name="flashcardFilter" value="learning"> Đang học
+                    </label>
+                    <label>
+                        <input type="radio" name="flashcardFilter" value="mastered"> Đã thuộc
+                    </label>
+                    <label>
+                        <input type="radio" name="flashcardFilter" value="new"> Từ mới
+                    </label>
+                </div>
+            </div>
+
+            <div class="action-button-group">
+                <button id="startFlashcardBtn">Học Flashcards</button>
+                <button id="startQuizBtn">Làm Quiz</button>
+            </div>
+            <button id="backToUnitsFromActionsBtn" class="secondary-action-btn">Quay lại danh sách Unit</button>
+        </div>
+
+        <div id="flashcardView" style="display: none;">
+            <h2 id="flashcardUnitTitle"></h2>
+            <div class="flashcard-container" id="flashcardContainer">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-face flashcard-front">
+                        <div id="fcWord" class="flashcard-word"></div>
+                        <div id="fcPronunciation" class="flashcard-pronunciation"></div>
+                        <img id="fcImage" src="" alt="Hình ảnh minh họa" style="display: none;">
+                        <button id="fcPlayAudioBtn" class="audio-button" aria-label="Phát âm">🔊</button>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div id="fcPartOfSpeech" class="flashcard-pos"></div>
+                        <div id="fcMeaning" class="flashcard-meaning"></div>
+                        <div id="fcExampleEn" class="flashcard-example"></div>
+                        <div id="fcExampleVi" class="flashcard-example"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="wordCounter"></div>
+
+            <div id="wordStatusControlsContainer" class="word-status-controls-container" style="display: none;">
+                <button class="status-btn" id="statusMarkLearningBtn" data-status="learning">Đang học</button>
+                <button class="status-btn" id="statusMarkMasteredBtn" data-status="mastered">Đã thuộc</button>
+                <button class="status-btn" id="statusClearBtn" data-status="new" title="Xóa trạng thái hiện tại của từ này">Bỏ đánh dấu</button>
+            </div>
+
+            <div class="action-buttons">
+                <button id="flipCardBtn">Lật thẻ (Hoặc click)</button>
+            </div>
+            <div class="nav-buttons">
+                <button id="prevCardBtn">Trước</button>
+                <button id="nextCardBtn">Tiếp</button>
+            </div>
+            <button id="backToActionsFromFlashcardBtn" class="secondary-action-btn">Quay lại</button>
+        </div>
+
+
+        <div id="quizView" style="display: none;">
+            <h2 id="quizUnitTitle"></h2>
+            <div id="quizProgress"></div>
+            <div id="quizQuestionWrapper"> 
+                <div id="questionArea"></div>
+                <div id="optionsContainer" class="options-container">
+                </div>
+            </div>
+            <div id="feedbackArea"></div>
+            <button id="nextQuestionBtn" style="display:none;">Câu tiếp theo</button>
+            <div id="scoreArea"></div>
+            <button id="backToActionsFromQuizBtn" class="secondary-action-btn">Quay lại</button>
+        </div>
+
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
