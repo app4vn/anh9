@@ -1,0 +1,775 @@
+/* --- CSS Variables --- */
+:root {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Nunito Sans', sans-serif;
+
+    --primary-color: #2A9D8F;
+    --secondary-color: #264653; /* For main text and headings */
+    --accent-color: #E9C46A;
+
+    --bg-main: #F8F9FA;
+    --bg-container: #FFFFFF;
+
+    --text-dark: var(--secondary-color);
+    --text-light: #5A7D8C;
+    --text-on-primary: #FFFFFF;
+    --text-on-accent: var(--secondary-color);
+
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --error-color-subtle: #D9534F;
+    --border-color: #DEE2E6;
+
+    --flashcard-bg: #FFF8E1;
+    --flashcard-border: #F3D9A5;
+    --flashcard-text-main: #544D42;
+    --flashcard-word-color: var(--secondary-color);
+    --flashcard-pronunciation-color: var(--primary-color);
+    --flashcard-pos-color: #C05A02;
+    --flashcard-meaning-color: var(--secondary-color);
+    --flashcard-example-text-color: #6B6B6B;
+
+    --border-radius-sm: 6px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --success-bg: #d1e7dd;
+    --success-text-strong: #0f5132;
+    --error-bg: #f8d7da;
+    --error-text-strong: #842029;
+    --disabled-bg: #e9ecef;
+    --disabled-text: #6c757d;
+
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 10px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/* --- General Styles --- */
+body {
+    font-family: var(--font-body);
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 16px;
+}
+.container {
+    width: 100%;
+    max-width: 700px;
+    background-color: var(--bg-container);
+    padding: 30px 35px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 30px;
+}
+h1, h2 {
+    font-family: var(--font-heading);
+    text-align: center;
+    color: var(--secondary-color);
+    margin-top: 0;
+    font-weight: 700;
+}
+h1#mainAppTitle {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-weight: 700;
+    text-align: left;
+}
+h2 { /* General h2 for other views */
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+/* --- Buttons --- */
+button {
+    font-family: var(--font-body);
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+    border: none;
+    padding: 10px 20px;
+    margin: 8px 5px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    box-shadow: var(--shadow-sm);
+}
+button:hover:not(:disabled) {
+    background-color: #228679;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+button:active:not(:disabled) {
+    transform: translateY(0px);
+    box-shadow: var(--shadow-sm);
+}
+button:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.secondary-action-btn {
+    background-color: var(--text-light);
+    color: var(--text-on-primary);
+}
+.secondary-action-btn:hover:not(:disabled) {
+    background-color: #4a6b79;
+}
+
+/* --- Authentication View & User Status View --- */
+#authView {
+    margin-bottom: 20px;
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background-color: var(--bg-container);
+    box-shadow: var(--shadow-sm);
+}
+#authView h2 {
+    color: var(--primary-color);
+    font-size: 1.7em;
+    margin-bottom: 25px;
+}
+#userStatusView {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0px;
+    margin-bottom: 25px;
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+#userStatusView p {
+    margin: 0;
+    font-size: 0.9em;
+    color: var(--text-light);
+    font-weight: 400;
+}
+#userStatusView button#logoutBtn {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: none;
+    padding: 5px 0px 5px 10px;
+    font-size: 0.9em;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 600;
+    box-shadow: none;
+}
+#userStatusView button#logoutBtn:hover:not(:disabled) {
+    background-color: transparent;
+    color: var(--secondary-color);
+    transform: none;
+}
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    font-family: var(--font-body);
+    width: calc(100% - 30px);
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 1em;
+    background-color: #FFFFFF;
+    color: var(--text-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.25);
+}
+.auth-form button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+}
+.auth-form button#registerBtn {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    font-weight: 600;
+}
+.auth-form button#registerBtn:hover:not(:disabled) {
+    background-color: rgba(42, 157, 143, 0.08);
+    color: #228679;
+    border-color: #228679;
+}
+#authMessage {
+    text-align: center;
+    padding: 12px 15px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95em;
+    border: 1px solid transparent;
+}
+#authMessage.success {
+    background-color: var(--success-bg);
+    color: var(--success-text-strong);
+    border-color: var(--success-color);
+}
+#authMessage.error {
+    background-color: var(--error-bg);
+    color: var(--error-text-strong);
+    border-color: var(--error-color);
+}
+
+/* --- Unit List & Actions --- */
+#unitListContainer {
+    padding: 10px 0;
+}
+.unit-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 22px;
+}
+.unit-item {
+    background-color: var(--bg-container);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: transform 0.25s ease-out, box-shadow 0.3s ease-out;
+    box-shadow: 0 6px 15px rgba(38, 70, 83, 0.12);
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+}
+.unit-item:hover {
+    transform: translateY(-6px) scale(1.04);
+    box-shadow: 0 10px 25px rgba(38, 70, 83, 0.18);
+}
+.unit-title-en {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.25em;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+.unit-title-vi {
+    font-family: var(--font-body);
+    font-size: 0.9em;
+    color: var(--text-light);
+    margin-top: auto;
+    padding-top: 8px;
+}
+#unitActionsView { display: none; text-align: center; padding: 25px 0; }
+
+/* --- Flashcard Area --- */
+#flashcardView {
+    display: none;
+    text-align: center;
+    padding-top: 15px;
+}
+#flashcardView h2#flashcardUnitTitle {
+    font-family: var(--font-body);
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.flashcard-container {
+    perspective: 1200px;
+    width: 90%;
+    max-width: 400px;
+    height: 260px;
+    margin: 0 auto 20px;
+    cursor: pointer;
+}
+.flashcard {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease-out;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    background-color: var(--flashcard-bg);
+    border: 1px solid var(--flashcard-border);
+}
+.flashcard-container:hover .flashcard {
+    box-shadow: var(--shadow-lg);
+}
+.flashcard.is-flipped {
+    transform: rotateY(180deg);
+}
+.flashcard:hover, 
+.flashcard.is-flipped:hover { 
+     transform: translateY(-6px) scale(1.03) rotateY(var(--rotateY, 0deg)); 
+     box-shadow: var(--shadow-lg);
+}
+.flashcard.is-flipped {
+    --rotateY: 180deg; 
+}
+
+.flashcard-face {
+    position: absolute; width: 100%; height: 100%;
+    top: 0; left: 0;
+    backface-visibility: hidden;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: var(--border-radius-lg);
+    color: var(--flashcard-text-main);
+}
+.flashcard-front {
+    z-index: 2;
+}
+.flashcard-back {
+    transform: rotateY(180deg);
+    z-index: 1;
+}
+.flashcard.is-flipped .flashcard-front {
+    z-index: 1;
+}
+.flashcard.is-flipped .flashcard-back {
+    z-index: 2;
+}
+
+.flashcard-word {
+    font-family: var(--font-heading);
+    font-size: 2.3em;
+    font-weight: 700;
+    color: var(--flashcard-word-color);
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+#fcWord .tts-word {
+    display: inline-block; 
+    transition: background-color 0.15s ease-out, color 0.15s ease-out;
+}
+#fcWord .highlight-tts {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    padding: 0 3px;
+    border-radius: 3px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+.flashcard-pronunciation {
+    font-family: var(--font-body);
+    font-size: 1.3em;
+    font-style: italic;
+    color: var(--flashcard-pronunciation-color);
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding: 8px 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: var(--border-radius-md);
+    border: 1px solid rgba(42, 157, 143, 0.25);
+    box-shadow: 0 2px 5px rgba(38, 70, 83, 0.1);
+    display: inline-block;
+    max-width: 90%;
+    word-wrap: break-word;
+}
+#fcImage {
+    max-width: 85%;
+    max-height: 110px;
+    width: auto;
+    height: auto;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius-md);
+    object-fit: contain;
+}
+
+.flashcard-pos {
+    font-family: var(--font-body);
+    font-size: 0.9em;    
+    font-style: normal;  
+    font-weight: 400;    
+    color: var(--text-light); 
+    margin-bottom: 4px;  
+}
+
+.flashcard-meaning {
+    font-family: var(--font-heading);
+    font-size: 1.5em;    
+    font-weight: 600;    
+    color: var(--flashcard-meaning-color);
+    margin-bottom: 18px; 
+    line-height: 1.3;    
+}
+
+.flashcard-example { /* CSS chung cho các ví dụ */
+    font-family: var(--font-body);
+    font-size: 0.9em;
+    color: var(--flashcard-example-text-color);
+    font-style: italic;
+    line-height: 1.5; 
+    max-width: 95%;
+    text-align: center;
+}
+
+#fcExampleEn {
+    margin-bottom: 12px; 
+}
+
+#fcExampleVi {
+    /* font-style: normal; */ /* Bỏ comment nếu muốn tiếng Việt không nghiêng */
+    margin-top: 0;      
+    padding-top: 0;     
+    border-top: none;   
+}
+
+.audio-button {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--primary-color);
+    border: none; /* Bỏ viền theo yêu cầu trước đó */
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    z-index: 10; 
+    padding: 0;
+    margin: 0;
+    text-transform: none;
+    letter-spacing: normal;
+    backface-visibility: hidden; /* Giúp ẩn khi mặt thẻ quay đi */
+}
+.audio-button:hover {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: scale(1.05);
+}
+.audio-button:active {
+    transform: scale(0.95);
+}
+#wordCounter {
+    font-family: var(--font-body);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    color: var(--text-light);
+    font-weight: 600;
+}
+#flashcardView .action-buttons,
+#flashcardView .nav-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+#flashcardView .action-buttons button,
+#flashcardView .nav-buttons button {
+    margin: 5px;
+    padding: 10px 18px;
+    font-size: 0.95em;
+}
+#flashcardView .action-buttons button#flipCardBtn {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    min-width: 150px;
+}
+#flashcardView .action-buttons button#flipCardBtn:hover:not(:disabled) {
+    background-color: #d4b05a;
+}
+#flashcardView .nav-buttons button#prevCardBtn,
+#flashcardView .nav-buttons button#nextCardBtn {
+    background-color: var(--primary-color);
+    min-width: 100px;
+}
+#flashcardView .nav-buttons button#prevCardBtn:hover:not(:disabled),
+#flashcardView .nav-buttons button#nextCardBtn:hover:not(:disabled) {
+    background-color: #228679;
+}
+#flashcardView button#backToActionsFromFlashcardBtn {
+    margin-top: 15px;
+    background-color: var(--text-light);
+    font-size: 0.9em;
+    padding: 8px 16px;
+}
+#flashcardView button#backToActionsFromFlashcardBtn:hover:not(:disabled) {
+    background-color: #4a6b79;
+}
+
+/* --- Quiz View (CSS gốc của bạn, với tiêu đề Quiz đã được CẬP NHẬT) --- */
+#quizView {
+    display: none;
+    text-align: center;
+    padding: 20px 0; 
+}
+
+#quizView h2#quizUnitTitle { 
+    font-family: var(--font-body);    
+    font-size: 1.1em;                 
+    font-weight: 600;                 
+    color: var(--text-light);         
+    margin-top: 0;                    
+    margin-bottom: 20px;              
+    text-align: center;               
+}
+
+#quizProgress {
+    font-family: var(--font-body);
+    font-size: 1em;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+#questionArea {
+    font-family: var(--font-heading);
+    padding: 25px 20px;
+    margin: 20px auto;
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--secondary-color);
+    background-color: rgba(42, 157, 143, 0.08); 
+    border-radius: var(--border-radius-md);
+    min-height: 80px;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    line-height: 1.4;
+    box-shadow: var(--shadow-sm);
+    max-width: 90%;
+}
+#questionArea span { 
+    font-family: var(--font-body); 
+    font-size:0.65em; 
+    color:var(--text-light); 
+    display: block; 
+    margin-top: 5px;
+    font-weight: 400; 
+}
+
+#quizQuestionWrapper { opacity: 1; transition: opacity 0.3s ease-in-out; }
+#quizQuestionWrapper.content-hidden { opacity: 0; }
+
+.options-container button {
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 480px;
+    margin: 12px auto;
+    padding: 15px 20px;
+    font-size: 1.05em;
+    font-weight: 600;
+    background-color: var(--bg-container);
+    color: var(--text-dark);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    text-align: left;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.15s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.options-container button:not(:disabled):hover {
+    border-color: var(--primary-color);
+    background-color: rgba(42, 157, 143, 0.05);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.options-container button .option-text {
+    flex-grow: 1;
+    text-align: center;
+}
+.options-container button .icon {
+    margin-right: 12px;
+    font-size: 1.3em;
+    min-width: 20px;
+}
+
+.options-container button.correct {
+    background-color: var(--success-bg);
+    color: var(--success-text-strong);
+    border-color: var(--success-color);
+    font-weight: 700;
+}
+.options-container button.incorrect {
+    background-color: var(--error-bg);
+    color: var(--error-text-strong);
+    border-color: var(--error-color);
+    font-weight: 700;
+}
+.options-container button.correct .icon::before {
+    content: '✓';
+    color: var(--success-color);
+}
+.options-container button.incorrect .icon::before {
+    content: '✗';
+    color: var(--error-color);
+}
+
+#feedbackArea {
+    font-family: var(--font-body);
+    margin: 25px auto; 
+    padding: 15px;
+    border-radius: var(--border-radius-sm);
+    font-size: 1.1em;
+    font-weight: 600;
+    min-height: 20px; 
+    border: 1px solid transparent;
+    max-width: 480px; 
+    box-sizing: border-box; 
+}
+#feedbackArea.correct-feedback {
+    background-color: var(--success-bg);
+    color: var(--success-text-strong);
+    border-color: var(--success-color);
+}
+#feedbackArea.incorrect-feedback {
+    background-color: var(--error-bg);
+    color: var(--error-text-strong);
+    border-color: var(--error-color);
+}
+
+#scoreArea {
+    font-family: var(--font-heading);
+    margin: 30px 0;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+#quizView #nextQuestionBtn { 
+    font-size: 1.05em;
+    padding: 12px 25px;
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+}
+#quizView #nextQuestionBtn:hover:not(:disabled) {
+    background-color: #d4b05a;
+}
+
+/* --- Status Messages --- */
+.status-message {
+    font-family: var(--font-body);
+    text-align: center; padding: 25px; font-size: 1.1em; color: var(--text-light); background-color: var(--bg-container); border-radius: var(--border-radius-md);
+}
+.status-message small { display: block; margin-top: 10px; font-size: 0.85em; color: var(--error-color); }
+
+
+/* --- CSS CHO BỘ LỌC TRẠNG THÁI TỪ VỰNG TRONG UNIT ACTIONS VIEW --- */
+.filter-controls-container {
+    margin-bottom: 25px; 
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background-color: #fdfdfd; 
+}
+
+.filter-label {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-top: 0;
+    margin-bottom: 12px;
+    text-align: left; 
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px 15px; 
+    justify-content: flex-start; 
+}
+
+.filter-options label {
+    font-size: 0.9em;
+    color: var(--text-light);
+    display: inline-flex; 
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s ease;
+}
+
+.filter-options label:hover {
+    background-color: rgba(0,0,0,0.05); 
+}
+
+.filter-options input[type="radio"] {
+    margin-right: 6px;
+    accent-color: var(--primary-color); 
+}
+
+
+/* --- CSS CHO CÁC NÚT TRẠNG THÁI TỪ VỰNG (FLASHCARD VIEW) --- */
+.word-status-controls-container {
+    text-align: center;
+    margin-bottom: 15px; 
+}
+
+.status-btn {
+    font-size: 0.85em; 
+    padding: 6px 12px; 
+    margin: 0 4px;     
+    text-transform: none; 
+    letter-spacing: normal;
+    border: 1px solid var(--border-color); 
+    background-color: var(--bg-container); 
+    color: var(--text-dark); 
+    box-shadow: none; 
+    opacity: 0.7; 
+}
+
+.status-btn:hover:not(:disabled) {
+    opacity: 1;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: rgba(42, 157, 143, 0.05); 
+    transform: none; 
+    box-shadow: var(--shadow-sm); 
+}
+
+.status-btn.active-status { 
+    opacity: 1;
+    font-weight: 700; 
+    color: var(--text-on-primary); 
+}
+
+#statusMarkLearningBtn.active-status {
+    background-color: var(--accent-color); 
+    border-color: #d4b05a; 
+    color: var(--text-on-accent);
+}
+#statusMarkMasteredBtn.active-status {
+    background-color: var(--success-color); 
+    border-color: #1f7a36; 
+}
+#statusClearBtn:active { 
+    background-color: var(--text-light);
+    color: var(--text-on-primary);
+}
